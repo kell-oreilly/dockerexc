@@ -3,7 +3,6 @@ services:
     db:
       image: mysql:8.0.27
       #command: '--default-authentication-plugin=mysql_native_password'
-      build: .
       restart: on-failure
       environment:
         - MYSQL_DATABASE=sakila
@@ -17,13 +16,12 @@ services:
       ports:
         - "3306:3306"
     api:
-      image: flask
       build: .
       restart: always
       environment:
         - ENV=PROD
-        - SQLALCHEMY_DATABASE_URI='mysql://kell:kell75@localhost:3306/sakila'
-        - ENV PYTHONPATH="/code"
+        - SQLALCHEMY_DATABASE_URI=mysql://kell:kell75@db:3306/sakila
+        - PYTHONPATH=/code
       ports:
         - "5000:5000"
       depends_on:
