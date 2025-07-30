@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+    db:
+      image: mysql:8.0.27
+      command: '--default-authentication-plugin=mysql_native_password'
+      build: .
+      restart: on-failure
+      environment:
+        - MYSQL_DATABASE=sakila
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_USER=kell
+        - MYSQL_PASSWORD=kell75
+      volumes:
+        - db_data:/var/lib/mysql
+        - ./sakila-schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+        - ./sakila-data.sql:/docker-entrypoint-initdb.d/2-data.sql
+      ports:
+        - "3306:3306"
+    api:
+      image: flask
+      build: .
+      restart: always
+      environment:
+        - ENV=PROD
+        - SQLALCHEMY_DATABASE_URI=#
+        - ENV PYTHONPATH="/code"
+      ports:
+        - "5000:5000"
+      depends_on:
+        - db
+volumes:
+  db_data:
